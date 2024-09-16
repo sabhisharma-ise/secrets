@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const ejs = require('ejs');
 const mongoose = require('mongoose');
-const encrypt = require('mongoose-encryption');
+const md5 = require('md5');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,15 +19,7 @@ const userSchema = new mongoose.Schema ({
     password: {type: String},
 });
 
-userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ['password']}); // https://www.npmjs.com/package/mongoose-encryption#secret-string-instead-of-two-keys
-                                                                            // https://www.npmjs.com/package/mongoose-encryption#encrypt-only-certain-fields
 const User = mongoose.model('User', userSchema);
-
-// That's it! Don't need to do anything else in /login or /register route to encrypt
-// Because, the way that mongoose-encryption works is that it will encrypt 
-// when you call 'save' i.e., creating a new user. And, it will decrypt 
-// when you call 'find' i.e., finding out a document based on email provided
-
 
 /************************************* Requests Targetting Home Route *********************************************/
 
@@ -49,21 +41,21 @@ app.route('/login')
     .post((req, res) => {
         
         const username = req.body.username;
-        const password = req.body.password;
+        const password = md5(req.body.password);    // Compare hashed value of password
 
         User.findOne({email: username}) // returns a single object or null
 
             .then((foundUser) => {
-                    // foundUser is not null: User exists in db
-                    if (foundUser) {
+                    
+                    if (foundUser) {    // foundUser is not null: User exists in db
                         if (foundUser.password === password) {
                             res.render('secrets');   
                         } else {
                             res.render('login', {message: 'Password did not match!'});
                         }
                     }
-                    // foundUser is null: User does not exist in db
-                    else {
+                    
+                    else {  // foundUser is null: User does not exist in db
                         res.render('login', {message: 'User not found!'});
                     }
                 })
@@ -71,7 +63,6 @@ app.route('/login')
                 .catch((err) => {                
                     console.error(err);
                     res.render('login', {message: 'An error occurred. Please try again.'});
-                    // res.send(err);
                 })
     });
 
@@ -86,20 +77,20 @@ app.route('/register')
     // Create one new user
     .post((req, res) => {
 
-        // Check if user is already registered or not
         username = req.body.username;
-        User.findOne({email: username})
+
+        User.findOne({email: username})    // Check if user is already registered or not
 
             .then((foundUser) => {
-                // User already registered. No need to register again.
-                if (foundUser) {
+                
+                if (foundUser) {    // User already registered. No need to register again.
                     return res.render('register', {message: 'User already exists!'});
                 } 
-                // User is not registered. So, register it.
-                else {
+                
+                else {  // User is not registered. So, register it.
                     const newUser = new User({
                         email: req.body.username,
-                        password: req.body.password,
+                        password: md5(req.body.password),   // Store hashed password.
                     });
             
                     newUser.save()
