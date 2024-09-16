@@ -10,6 +10,7 @@ This project is a web application that allows users to register, log in, and vie
 - EJS (Embedded JavaScript Templating)
 - Mongoose-encryption
 - dotenv
+- md5
 
 ## Features
 
@@ -25,6 +26,15 @@ In this basic level, the user's password is stored in the database in plain text
 
 ### Level 2: Password Encryption Using `mongoose-encryption`
 At this level, passwords are encrypted using the `mongoose-encryption` package before being saved to the database. This ensures that even if the database is compromised, the passwords are not directly accessible. The passwords are automatically decrypted when querying for users.
+
+### Level 3: Hashing Password using `md5`
+At this level, instead of storing passwords as plaintext or encrypted text, we use the `md5` hashing algorithm to hash the password before saving it in the database.
+
+- **Hashing**: Unlike encryption, hashing is a one-way function, meaning the original password cannot be retrieved from the hashed value.
+- **MD5**: `md5` is a widely used hashing function that generates a 128-bit hash value. When a user registers or logs in, the password they provide is hashed using `md5`, and only the hashed value is stored in the database.
+
+#### Why MD5?
+MD5 is easy to implement and provides a simple layer of security for password storage. However, it has vulnerabilities to attacks like rainbow table attacks. In future versions, more secure hashing algorithms (like `bcrypt`) will be implemented to provide stronger security.
 
 ## How to Run the Project
 
