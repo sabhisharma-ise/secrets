@@ -1,8 +1,11 @@
 require('dotenv').config();
+
 const express = require('express');
 const ejs = require('ejs');
 const mongoose = require('mongoose');
-const md5 = require('md5');
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -41,20 +44,28 @@ app.route('/login')
     .post((req, res) => {
         
         const username = req.body.username;
-        const password = md5(req.body.password);    // Compare hashed value of password
+        const password = req.body.password;
 
         User.findOne({email: username}) // returns a single object or null
 
             .then((foundUser) => {
                     
                     if (foundUser) {    // foundUser is not null: User exists in db
-                        if (foundUser.password === password) {
-                            res.render('secrets');   
-                        } else {
-                            res.render('login', {message: 'Password did not match!'});
-                        }
+                                                
+                        // bcrypt.compare(myPlaintextPassword, hash).then(function(result) { result = true });
+
+                        bcrypt.compare(password, foundUser.password).then(function(result) {
+                            
+                            if (result) {
+                                res.render('secrets');   
+                            } 
+                            
+                            else {
+                                res.render('login', {message: 'Password did not match!'});
+                            }
+                        });
                     }
-                    
+
                     else {  // foundUser is null: User does not exist in db
                         res.render('login', {message: 'User not found!'});
                     }
@@ -74,11 +85,10 @@ app.route('/register')
         res.render('register');
     })
 
-    // Create one new user
+    // Creates a new user
     .post((req, res) => {
 
         username = req.body.username;
-
         User.findOne({email: username})    // Check if user is already registered or not
 
             .then((foundUser) => {
@@ -88,21 +98,27 @@ app.route('/register')
                 } 
                 
                 else {  // User is not registered. So, register it.
-                    const newUser = new User({
-                        email: req.body.username,
-                        password: md5(req.body.password),   // Store hashed password.
-                    });
-            
-                    newUser.save()
-            
-                        .then(() => {
-                            res.render('secrets');
-                        })
+                    
+                    // Salting & hashing the password using bcrypt before saving
+                    
+                    bcrypt.hash(req.body.password, saltRounds).then(function(hash) {
                         
-                        .catch((err) => {
-                            console.error(err);
-                            res.send("An error occurred during registration.");
+                        const newUser = new User({
+                            email: req.body.username,
+                            password: hash,
                         });
+                
+                        newUser.save()
+                
+                            .then(() => {
+                                res.render('secrets');
+                            })
+                            
+                            .catch((err) => {
+                                console.error(err);
+                                res.send("An error occurred during registration.");
+                            });
+                    });
                 }
             })
 
@@ -121,7 +137,6 @@ app.route('/submit')
 
     .get((req, res) => {
         res.render('submit');
-        console.log(req.user);
         
     });
 
