@@ -1,6 +1,6 @@
 # Secrets
 
-This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. Currently, the app is at **Level 2 Authentication**, which involves encrypting user passwords in the database.
+This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. Currently, the app is at **Level 4 Authentication**, which involves salting and hashing user passwords using bcrypt before saving them in the database.
 
 ## Technologies Used
 
@@ -11,13 +11,14 @@ This project is a web application that allows users to register, log in, and vie
 - Mongoose-encryption
 - dotenv
 - md5
+- bcrypt
 
 ## Features
 
 - **User Registration**: Allows new users to register by providing their email and password.
 - **User Login**: Registered users can log in using their credentials.
 - **Secrets Page**: After logging in, users can view the secrets page.
-- **Encryption**: User passwords are securely stored in the database using encryption.
+- **Hashing & Encryption**: User passwords are securely stored in the database using hashing and encryption techniques.
 
 ## Levels of Authentication
 
@@ -33,8 +34,17 @@ At this level, instead of storing passwords as plaintext or encrypted text, we u
 - **Hashing**: Unlike encryption, hashing is a one-way function, meaning the original password cannot be retrieved from the hashed value.
 - **MD5**: `md5` is a widely used hashing function that generates a 128-bit hash value. When a user registers or logs in, the password they provide is hashed using `md5`, and only the hashed value is stored in the database.
 
-#### Why MD5?
-MD5 is easy to implement and provides a simple layer of security for password storage. However, it has vulnerabilities to attacks like rainbow table attacks. In future versions, more secure hashing algorithms (like `bcrypt`) will be implemented to provide stronger security.
+    #### Why MD5?
+    MD5 is easy to implement and provides a simple layer of security for password storage. However, it has vulnerabilities to attacks like rainbow table attacks. In future versions, more secure hashing algorithms (like `bcrypt`) will be implemented to provide stronger security.
+
+### Level 4: Salting and Hashing Password with `bcrypt`
+At this level, we use `bcrypt` to hash passwords with salting. `bcrypt` is a slow hashing algorithm designed to make brute-force attacks and rainbow table attacks computationally expensive.
+
+- **Salting**: A random string (called salt) is added to the password before hashing. This ensures that even if two users have the same password, they will have different hashes in the database.
+- **Hashing**: After adding the salt, the password is hashed using the `bcrypt` algorithm. Bcrypt allows setting the "work factor" (the number of hashing rounds), making it adaptable to different security requirements.
+  
+  #### Why Bcrypt?
+  Bcrypt is widely used because of its ability to adjust hashing rounds, providing greater security over time as computational power increases. Unlike MD5, `bcrypt` generates unique hashes even for identical inputs by introducing a salt.
 
 ## How to Run the Project
 
