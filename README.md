@@ -1,6 +1,6 @@
 # Secrets
 
-This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. Currently, the app is at **Level 4 Authentication**, which involves salting and hashing user passwords using bcrypt before saving them in the database.
+This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. The app is currently at **Level 5 Authentication**, utilizing `Passport.js` for user authentication and session management.
 
 ## Technologies Used
 
@@ -12,13 +12,18 @@ This project is a web application that allows users to register, log in, and vie
 - dotenv
 - md5
 - bcrypt
+- Passport.js
+- express-session
+- passport-local-mongoose
 
 ## Features
 
 - **User Registration**: Allows new users to register by providing their email and password.
 - **User Login**: Registered users can log in using their credentials.
 - **Secrets Page**: After logging in, users can view the secrets page.
-- **Hashing & Encryption**: User passwords are securely stored in the database using hashing and encryption techniques.
+- **Password Security**: User passwords are securely stored in the database using hashing and encryption techniques.
+- **Session Management**: Uses sessions for maintaining authentication status across routes.
+- **Salting and Hashing**: Ensures passwords are salted and hashed before storing in the database.
 
 ## Levels of Authentication
 
@@ -46,9 +51,20 @@ At this level, we use `bcrypt` to hash passwords with salting. `bcrypt` is a slo
   #### Why Bcrypt?
   Bcrypt is widely used because of its ability to adjust hashing rounds, providing greater security over time as computational power increases. Unlike MD5, `bcrypt` generates unique hashes even for identical inputs by introducing a salt.
 
+### Level 5: Authentication using `Passport.js`
+In Level 5, `Passport.js` is used to handle user authentication with session support. It allows users to stay logged in across different routes.
+
+- **Session Management**: Express-session is used to manage user sessions. Users remain authenticated after login, until they log out.
+- **Local Strategy**: Passport.js uses a local authentication strategy to authenticate users with a username and password.
+- **Serialization and Deserialization**: Passport.js serializes the user to store in the session, and deserializes it on subsequent requests.
+
+
 ## How to Run the Project
 
 1. Clone the repository.
+    ```bash
+   git clone https://github.com/sabhisharma-ise/Secrets.git
+   cd Secrets/
 2. Install the necessary dependencies:
    ```bash
    npm install
