@@ -1,6 +1,6 @@
 # Secrets
 
-This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. The app is currently at **Level 5 Authentication**, utilizing `Passport.js` for user authentication and session management.
+This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. The app is currently at **Level 6 Authentication**, utilizing **Google OAuth 2.0** with Passport.js for user authentication, as well as session management.
 
 ## Technologies Used
 
@@ -15,6 +15,8 @@ This project is a web application that allows users to register, log in, and vie
 - Passport.js
 - express-session
 - passport-local-mongoose
+- mongoose-findorcreate
+- Google OAuth 2.0
 
 ## Features
 
@@ -22,6 +24,7 @@ This project is a web application that allows users to register, log in, and vie
 - **User Login**: Registered users can log in using their credentials.
 - **Secrets Page**: After logging in, users can view the secrets page.
 - **Password Security**: User passwords are securely stored in the database using hashing and encryption techniques.
+- **OAuth 2.0 with Google**: Users can log in with their Google account using OAuth 2.0.
 - **Session Management**: Uses sessions for maintaining authentication status across routes.
 - **Salting and Hashing**: Ensures passwords are salted and hashed before storing in the database.
 
@@ -58,6 +61,11 @@ In Level 5, `Passport.js` is used to handle user authentication with session sup
 - **Local Strategy**: Passport.js uses a local authentication strategy to authenticate users with a username and password.
 - **Serialization and Deserialization**: Passport.js serializes the user to store in the session, and deserializes it on subsequent requests.
 
+### Level 6: Google OAuth 2.0 Authentication with Passport.js
+At this advanced level, we integrate **Google OAuth 2.0** for users to authenticate using their Google accounts via `Passport.js`.
+
+- **Google OAuth 2.0**: Allows users to sign in using their Google account. The authentication flow uses Passport's Google OAuth strategy to manage secure access.
+- **findOrCreate**: A helper plugin (mongoose-findorcreate) is used to either find an existing user in the database or create a new one if it's the user's first time logging in with Google.
 
 ## How to Run the Project
 
@@ -68,9 +76,14 @@ In Level 5, `Passport.js` is used to handle user authentication with session sup
 2. Install the necessary dependencies:
    ```bash
    npm install
-3. Set up a .env file to store your encryption secret:
+3. Set up a .env file to store your secrets, including Google OAuth credentials:
     ```makefile
     SECRET=yourSecretKey
+    CLIENT_ID=yourGoogleOAuthClientID
+    CLIENT_SECRET=yourGoogleOAuthClientSecret
+    ```
+    You can get your Google OAuth credentials from [Google Developer Console](https://console.cloud.google.com/apis/dashboard?project=secret-436105).
+
 4. Start your MongoDB server:
     ```bash
     mongod
