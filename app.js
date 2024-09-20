@@ -28,12 +28,13 @@ app.use(session({
 app.use(passport.initialize()); // Initialize passport.js
 app.use(passport.session());    // Use passport.js for all sessions
 
-mongoose.connect('mongodb://127.0.0.1:27017/userDB');
+mongoose.connect(process.env.MONGO_URI);
 
 const userSchema = new mongoose.Schema ({
     email: {type: String},
     password: {type: String},
-    googleId: {type: String}
+    googleId: {type: String},
+    secret: {type: String}
 });
 
 userSchema.plugin(passportLocalMongoose);   // add passport-local-mongoose plugin to user schema
@@ -43,12 +44,20 @@ const User = mongoose.model('User', userSchema);
 
 passport.use(User.createStrategy());    // create a local strategy for passport
 
-passport.serializeUser(function(user, done) {
-    done(null, user);
+passport.serializeUser(function(user, cb) {
+    process.nextTick(function() {
+      return cb(null, {
+        id: user.id,
+        username: user.username,
+        picture: user.picture
+      });
+    });
 });
-
-passport.deserializeUser(function(user, done) {
-    done(null, user);
+  
+passport.deserializeUser(function(user, cb) {
+    process.nextTick(function() {
+        return cb(null, user);
+    });
 });
 
 passport.use(new GoogleStrategy({
@@ -117,12 +126,48 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/secrets', (req, res) => {
-    
+    User.find({'secret': {$ne: null}})
+    .then((foundUser) => {
+        if (foundUser) {
+            res.render('secrets', {usersWithSecrets: foundUser});
+        }
+    }) 
+    .catch((err) => {
+        console.error(err);
+    })
+});
+
+app.get('/submit', (req, res) => {
     if (req.isAuthenticated()) {
-        res.render('secrets');
+        res.render('submit');
     } else {
         res.redirect('/login');
     }
+});
+
+app.post('/submit', (req, res) => {
+    
+    const submittedSecret = req.body.secret;
+    console.log(req.user.id);
+    
+    User.findById(req.user.id)
+    
+    .then((foundUser) => {
+        console.log(foundUser);
+        
+        if (foundUser) {
+            foundUser.secret = submittedSecret;
+            foundUser.save()
+            .then(() => {
+                res.redirect('/secrets');
+            });
+        }
+    })
+
+    .catch((err) => {
+        console.error(err);
+    })
+
 });
 
 app.listen(port, ()=>{
