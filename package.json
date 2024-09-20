@@ -16,5 +16,16 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^8.0.0"
-  }
+  },
+  "name": "secrets---starting-code",
+  "version": "1.0.0",
+  "description": "This project is a web application that allows users to register, log in, and view confidential information (secrets). It focuses on implementing authentication and security practices. The app is currently at **Level 6 Authentication**, utilizing **Google OAuth 2.0** with Passport.js for user authentication, as well as session management.",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC"
 }
