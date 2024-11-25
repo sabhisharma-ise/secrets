@@ -63,7 +63,7 @@ passport.deserializeUser(function(user, cb) {
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "https://secrets-xls4.onrender.com/auth/google/secrets"
+    callbackURL: "https://secrets-app-8b915dbcd4cc.herokuapp.com//auth/google/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
     console.log(profile);
